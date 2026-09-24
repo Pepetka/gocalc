@@ -33,6 +33,6 @@ func CalcHandler(registry *calc.Registry, args []string) (float64, error) {
 	return registry.Execute(op, operands)
 }
 
-func ListHandler(registry *calc.Registry) []calc.BaseOperation {
+func ListHandler(registry *calc.Registry) []calc.Operation {
 	return registry.List()
 }

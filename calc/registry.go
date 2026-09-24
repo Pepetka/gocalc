@@ -14,13 +14,13 @@ func New() *Registry {
 }
 
 func (r *Registry) registerBuiltin() {
-	_ = r.Register(NewAdd())
-	_ = r.Register(NewMul())
-	_ = r.Register(NewSub())
-	_ = r.Register(NewDiv())
-	_ = r.Register(NewPow())
-	_ = r.Register(NewNeg())
-	_ = r.Register(NewSqrt())
+	_ = r.Register(newAdd())
+	_ = r.Register(newMul())
+	_ = r.Register(newSub())
+	_ = r.Register(newDiv())
+	_ = r.Register(newPow())
+	_ = r.Register(newNeg())
+	_ = r.Register(newSqrt())
 }
 
 func (r *Registry) Register(op Operation) error {
@@ -48,15 +48,10 @@ func (r *Registry) Execute(name string, operands []float64) (float64, error) {
 	return op.Execute(operands)
 }
 
-func (r *Registry) List() []BaseOperation {
-	l := make([]BaseOperation, 0, len(r.ops))
+func (r *Registry) List() []Operation {
+	l := make([]Operation, 0, len(r.ops))
 	for _, op := range r.ops {
-		n := op.Name()
-		s := op.Arity()
-		l = append(l, BaseOperation{
-			name:  n,
-			arity: s,
-		})
+		l = append(l, op)
 	}
 	return l
 }

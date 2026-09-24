@@ -1,14 +1,15 @@
 package calc
 
 import (
+	"fmt"
 	"math"
 )
 
 type addOp struct {
-	BaseOperation
+	baseOperation
 }
 
-func NewAdd() Operation {
+func newAdd() Operation {
 	op := addOp{
 		name:  "add",
 		arity: 2,
@@ -28,10 +29,10 @@ func (op addOp) Execute(operands []float64) (float64, error) {
 }
 
 type mulOp struct {
-	BaseOperation
+	baseOperation
 }
 
-func NewMul() Operation {
+func newMul() Operation {
 	op := mulOp{
 		name:  "mul",
 		arity: 2,
@@ -51,10 +52,10 @@ func (op mulOp) Execute(operands []float64) (float64, error) {
 }
 
 type subOp struct {
-	BaseOperation
+	baseOperation
 }
 
-func NewSub() Operation {
+func newSub() Operation {
 	op := subOp{
 		name:  "sub",
 		arity: 2,
@@ -71,10 +72,10 @@ func (op subOp) Execute(operands []float64) (float64, error) {
 }
 
 type divOp struct {
-	BaseOperation
+	baseOperation
 }
 
-func NewDiv() Operation {
+func newDiv() Operation {
 	op := divOp{
 		name:  "div",
 		arity: 2,
@@ -91,20 +92,20 @@ func (op divOp) Execute(operands []float64) (float64, error) {
 }
 
 func (op divOp) validate(operands []float64) error {
-	if err := op.BaseOperation.validate(operands); err != nil {
+	if err := op.baseOperation.validate(operands); err != nil {
 		return err
 	}
 	if operands[1] == 0 {
-		return ErrInvalidOperands
+		return fmt.Errorf("%s: %f / %f", ErrDivByZero, operands[0], operands[1])
 	}
 	return nil
 }
 
 type powOp struct {
-	BaseOperation
+	baseOperation
 }
 
-func NewPow() Operation {
+func newPow() Operation {
 	op := powOp{
 		name:  "pow",
 		arity: 2,
@@ -121,10 +122,10 @@ func (op powOp) Execute(operands []float64) (float64, error) {
 }
 
 type negOp struct {
-	BaseOperation
+	baseOperation
 }
 
-func NewNeg() Operation {
+func newNeg() Operation {
 	op := negOp{
 		name:  "neg",
 		arity: 1,
@@ -141,10 +142,10 @@ func (op negOp) Execute(operands []float64) (float64, error) {
 }
 
 type sqrtOp struct {
-	BaseOperation
+	baseOperation
 }
 
-func NewSqrt() Operation {
+func newSqrt() Operation {
 	op := sqrtOp{
 		name:  "sqrt",
 		arity: 1,
@@ -161,11 +162,11 @@ func (op sqrtOp) Execute(operands []float64) (float64, error) {
 }
 
 func (op sqrtOp) validate(operands []float64) error {
-	if err := op.BaseOperation.validate(operands); err != nil {
+	if err := op.baseOperation.validate(operands); err != nil {
 		return err
 	}
 	if operands[0] < 0 {
-		return ErrInvalidOperands
+		return fmt.Errorf("%s: %f", ErrNegativeSqrt, operands[0])
 	}
 	return nil
 }
