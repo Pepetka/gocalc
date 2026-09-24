@@ -1,0 +1,13 @@
+glob_matcher: doublestar
+
+pre-commit:
+  jobs:
+    - name: fmt
+      run: task fmt
+    - name: lint
+      run: task lint
+
+pre-push:
+  jobs:
+    - name: vuln
+      run: task vuln

@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task --list
+    silent: true
+
+  fmt:
+    desc: Run formatter
+    cmds:
+      - golangci-lint fmt
+
+  lint:
+    desc: Run linter
+    cmds:
+      - golangci-lint run
+
+  vuln:
+    desc: Run vulnerability scanner
+    cmds:
+      - go tool govulncheck ./...
+
+  build:
+    desc: Build binary
+    cmds:
+      - go build -o bin/ ./cmd/gocalc/
+    sources:
+      - "**/*.go"
+    generates:
+      - bin/gocalc
+
+  check:
+    desc: Run full check
+    cmds:
+      - task: fmt
+      - task: lint
+      - task: vuln
