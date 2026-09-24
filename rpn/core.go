@@ -1,4 +1,4 @@
-// Package rpn is a reverse polish notation calculator.
+// Package rpn evaluates expressions written in reverse Polish notation.
 package rpn
 
 import (
@@ -9,6 +9,10 @@ import (
 	"github.com/pepetka/gocalc/containers"
 )
 
+// Eval evaluates a space-separated reverse Polish notation expression using
+// the operations registered in registry and returns the result.
+// Each token must either parse as a number or name a registered operation,
+// otherwise an error is returned.
 func Eval(registry *calc.Registry, s string) (float64, error) {
 	a := strings.Split(s, " ")
 	stack := containers.NewStack[float64](len(a))

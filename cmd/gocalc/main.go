@@ -1,3 +1,5 @@
+// Command gocalc is a CLI calculator that executes arithmetic operations
+// either directly or as reverse Polish notation expressions.
 package main
 
 import (

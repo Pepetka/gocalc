@@ -1,10 +1,14 @@
-// Package calc is a calculator package that allows you to register and execute operations.
+// Package calc provides a registry of named arithmetic operations over float64 operands.
 package calc
 
+// Registry stores operations by name and executes them on demand.
+// Use New to create one pre-populated with the builtin operations.
 type Registry struct {
 	ops map[string]Operation
 }
 
+// New returns a Registry with all builtin operations registered:
+// add, mul, sub, div, pow, neg and sqrt.
 func New() *Registry {
 	r := &Registry{
 		ops: make(map[string]Operation),
@@ -23,6 +27,8 @@ func (r *Registry) registerBuiltin() {
 	_ = r.Register(newSqrt())
 }
 
+// Register adds op to the registry under op.Name().
+// It returns ErrOpRegistered if the name is already taken.
 func (r *Registry) Register(op Operation) error {
 	n := op.Name()
 	if _, ok := r.ops[n]; ok {
@@ -32,6 +38,8 @@ func (r *Registry) Register(op Operation) error {
 	return nil
 }
 
+// Get returns the operation registered under name, or ErrOpNotFound
+// if the name is unknown.
 func (r *Registry) Get(name string) (Operation, error) {
 	op, ok := r.ops[name]
 	if !ok {
@@ -40,6 +48,9 @@ func (r *Registry) Get(name string) (Operation, error) {
 	return op, nil
 }
 
+// Execute runs the operation registered under name with the given operands.
+// It returns ErrOpNotFound if the name is unknown, or the operation's own
+// error if the operands are invalid.
 func (r *Registry) Execute(name string, operands []float64) (float64, error) {
 	op, ok := r.ops[name]
 	if !ok {
@@ -48,6 +59,7 @@ func (r *Registry) Execute(name string, operands []float64) (float64, error) {
 	return op.Execute(operands)
 }
 
+// List returns all registered operations in no particular order.
 func (r *Registry) List() []Operation {
 	l := make([]Operation, 0, len(r.ops))
 	for _, op := range r.ops {

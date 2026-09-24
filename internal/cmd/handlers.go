@@ -1,4 +1,4 @@
-// Package cmd is a package that contains handlers for different modes.
+// Package cmd implements the command handlers for the gocalc CLI modes.
 package cmd
 
 import (
@@ -9,6 +9,8 @@ import (
 	"github.com/pepetka/gocalc/rpn"
 )
 
+// RpnHandler evaluates args[0] as a reverse Polish notation expression.
+// It returns an error if args does not contain exactly one expression.
 func RpnHandler(registry *calc.Registry, args []string) (float64, error) {
 	if len(args) != 1 {
 		return 0, errors.New("invalid number of arguments")
@@ -16,6 +18,8 @@ func RpnHandler(registry *calc.Registry, args []string) (float64, error) {
 	return rpn.Eval(registry, args[0])
 }
 
+// CalcHandler executes the operation named by args[0] with the remaining
+// arguments parsed as its float64 operands.
 func CalcHandler(registry *calc.Registry, args []string) (float64, error) {
 	if len(args) < 2 {
 		return 0, errors.New("invalid number of arguments")
@@ -33,6 +37,7 @@ func CalcHandler(registry *calc.Registry, args []string) (float64, error) {
 	return registry.Execute(op, operands)
 }
 
+// ListHandler returns all operations registered in registry.
 func ListHandler(registry *calc.Registry) []calc.Operation {
 	return registry.List()
 }
