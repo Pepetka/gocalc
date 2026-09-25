@@ -1,6 +1,11 @@
 // Package calc provides a registry of named arithmetic operations over float64 operands.
 package calc
 
+import (
+	"slices"
+	"strings"
+)
+
 // Registry stores operations by name and executes them on demand.
 // Use New to create one pre-populated with the builtin operations.
 type Registry struct {
@@ -28,8 +33,12 @@ func (r *Registry) registerBuiltin() {
 }
 
 // Register adds op to the registry under op.Name().
-// It returns ErrOpRegistered if the name is already taken.
+// It returns ErrNilOp if op is nil, or ErrOpRegistered if the name
+// is already taken.
 func (r *Registry) Register(op Operation) error {
+	if op == nil {
+		return ErrNilOp
+	}
 	n := op.Name()
 	if _, ok := r.ops[n]; ok {
 		return ErrOpRegistered
@@ -59,11 +68,14 @@ func (r *Registry) Execute(name string, operands []float64) (float64, error) {
 	return op.Execute(operands)
 }
 
-// List returns all registered operations in no particular order.
+// List returns all registered operations sorted by name.
 func (r *Registry) List() []Operation {
 	l := make([]Operation, 0, len(r.ops))
 	for _, op := range r.ops {
 		l = append(l, op)
 	}
+	slices.SortFunc(l, func(a, b Operation) int {
+		return strings.Compare(a.Name(), b.Name())
+	})
 	return l
 }

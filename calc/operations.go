@@ -50,4 +50,6 @@ var (
 	ErrDivByZero = errors.New("calc: division by zero")
 	// ErrNegativeSqrt is returned by the sqrt operation when the operand is negative.
 	ErrNegativeSqrt = errors.New("calc: negative square root")
+	// ErrNilOp is returned when a nil operation is passed to Register.
+	ErrNilOp = errors.New("calc: nil operation")
 )

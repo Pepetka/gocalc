@@ -19,10 +19,22 @@ func main() {
 	}
 }
 
+func usage() {
+	_, _ = fmt.Fprintf(flag.CommandLine.Output(), `Usage: gocalc <command> [arguments]
+
+Commands:
+  <op> <operands...>  execute operation (add, mul, sub, div, pow, neg, sqrt)
+  rpn "<expr>"        evaluate a reverse Polish notation expression
+  ops                 list registered operations
+`)
+}
+
 func run() error {
+	flag.Usage = usage
 	flag.Parse()
 	args := flag.Args()
 	if len(args) < 1 {
+		flag.Usage()
 		return errors.New("not enough arguments")
 	}
 	command := args[0]
