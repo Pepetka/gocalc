@@ -8,6 +8,11 @@ tasks:
       - task --list
     silent: true
 
+  init:
+    desc: Init lefthook
+    cmds:
+      - lefthook install
+
   fmt:
     desc: Run formatter
     cmds:
