@@ -9,12 +9,16 @@ import (
 	"github.com/pepetka/gocalc/containers"
 )
 
-// Eval evaluates a space-separated reverse Polish notation expression using
-// the operations registered in registry and returns the result.
+// Eval evaluates a whitespace-separated reverse Polish notation expression
+// using the operations registered in registry and returns the result.
 // Each token must either parse as a number or name a registered operation,
-// otherwise an error is returned.
+// otherwise an error is returned. An empty expression yields
+// calc.ErrEmptyExpression.
 func Eval(registry *calc.Registry, s string) (float64, error) {
-	a := strings.Split(s, " ")
+	a := strings.Fields(s)
+	if len(a) == 0 {
+		return 0, calc.ErrEmptyExpression
+	}
 	stack := containers.NewStack[float64](len(a))
 	for _, v := range a {
 		operand, err := strconv.ParseFloat(v, 64)
@@ -26,7 +30,6 @@ func Eval(registry *calc.Registry, s string) (float64, error) {
 		if err != nil {
 			return 0, err
 		}
-		name := op.Name()
 		arity := op.Arity()
 
 		operands := make([]float64, arity)
@@ -38,7 +41,7 @@ func Eval(registry *calc.Registry, s string) (float64, error) {
 			operands[arity-i-1] = operand
 		}
 
-		res, err := registry.Execute(name, operands)
+		res, err := op.Execute(operands)
 		if err != nil {
 			return 0, err
 		}

@@ -58,12 +58,16 @@ func (r *Registry) Get(name string) (Operation, error) {
 }
 
 // Execute runs the operation registered under name with the given operands.
-// It returns ErrOpNotFound if the name is unknown, or the operation's own
-// error if the operands are invalid.
+// It returns ErrOpNotFound if the name is unknown, ErrInvalidOperandsNum if
+// the operand count does not match the operation's arity, or the operation's
+// own error if the operands are otherwise invalid.
 func (r *Registry) Execute(name string, operands []float64) (float64, error) {
 	op, ok := r.ops[name]
 	if !ok {
 		return 0, ErrOpNotFound
+	}
+	if len(operands) != op.Arity() {
+		return 0, ErrInvalidOperandsNum
 	}
 	return op.Execute(operands)
 }

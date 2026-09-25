@@ -9,8 +9,9 @@ type Operation interface {
 	// Arity returns the exact number of operands the operation accepts.
 	Arity() int
 	// Execute applies the operation to operands and returns the result.
-	// It returns an error if the operands do not match the operation's arity
-	// or are otherwise invalid for the operation.
+	// It expects exactly Arity() operands; the arity check is the caller's
+	// responsibility (Registry.Execute performs it). It returns an error
+	// if the operands are otherwise invalid for the operation.
 	Execute(operands []float64) (float64, error)
 }
 
@@ -29,16 +30,6 @@ func (op baseOperation) Arity() int {
 	return op.arity
 }
 
-// validate checks that the number of operands matches the operation's arity.
-func (op baseOperation) validate(operands []float64) error {
-	s := op.arity
-	l := len(operands)
-	if l != s {
-		return ErrInvalidOperandsNum
-	}
-	return nil
-}
-
 var (
 	// ErrOpRegistered is returned when an operation with the same name is already registered.
 	ErrOpRegistered = errors.New("calc: operation already registered")
@@ -46,6 +37,8 @@ var (
 	ErrOpNotFound = errors.New("calc: operation not found")
 	// ErrInvalidOperandsNum is returned when the number of operands does not match the operation's arity.
 	ErrInvalidOperandsNum = errors.New("calc: invalid number of operands")
+	// ErrEmptyExpression is returned when the expression is empty.
+	ErrEmptyExpression = errors.New("calc: empty expression")
 	// ErrDivByZero is returned by the div operation when the divisor is zero.
 	ErrDivByZero = errors.New("calc: division by zero")
 	// ErrNegativeSqrt is returned by the sqrt operation when the operand is negative.

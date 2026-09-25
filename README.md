@@ -45,7 +45,7 @@ gocalc sqrt 9
 
 ### rpn
 
-Evaluate a space-separated reverse Polish notation expression:
+Evaluate a whitespace-separated reverse Polish notation expression:
 
 ```sh
 gocalc rpn "2 3 add"
@@ -77,10 +77,12 @@ dependencies and can be used on its own.
 ## Design decision: fixed arity
 
 All operations have a fixed arity, exposed via `Operation.Arity()`, and the
-evaluator validates the operand count before executing (`ErrInvalidOperandsNum`
-on mismatch). This is deliberate: in RPN a variadic operation would make
-evaluation ambiguous — when the evaluator pops operands from the stack, it
-cannot know how many of them a variadic `add` should consume.
+operand count is validated against it before execution — by the RPN evaluator
+when popping from the stack and by `Registry.Execute` for direct calls
+(`ErrInvalidOperandsNum` on mismatch). This is deliberate: in RPN a variadic
+operation would make evaluation ambiguous — when the evaluator pops operands
+from the stack, it cannot know how many of them a variadic `add` should
+consume.
 
 Variadic behavior is instead emulated by chaining binary operations:
 
@@ -132,12 +134,14 @@ Operations implement the `calc.Operation` interface: `Name`, `Arity` and
    }
 
    func (op modOp) Execute(operands []float64) (float64, error) {
-   	if err := op.validate(operands); err != nil {
-   		return 0, err
-   	}
    	return math.Mod(operands[0], operands[1]), nil
    }
    ```
+
+   Operand count is validated by `Registry.Execute` against `Arity()`, so
+   `Execute` only needs to check operation-specific constraints (if any —
+   e.g. `div` rejects a zero divisor, while `mod` accepts it and returns
+   NaN via `math.Mod`).
 
 2. Register it in `registerBuiltin()` in `calc/registry.go`:
 
@@ -194,7 +198,7 @@ func main() {
 
 - All operations are fixed-arity; variadic calls must be chained (see above).
 - Only `float64` operands; no integers, complex numbers or arbitrary precision.
-- RPN expressions must be space-separated; `2 3 add` works, `2,3,add` does not.
+- RPN expressions must be whitespace-separated; `2 3 add` works, `2,3,add` does not.
 - Exactly one expression per `rpn` invocation.
 - No infix notation, parentheses, variables or operator precedence.
 

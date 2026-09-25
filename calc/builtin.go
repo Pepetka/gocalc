@@ -18,9 +18,6 @@ func newAdd() Operation {
 }
 
 func (op addOp) Execute(operands []float64) (float64, error) {
-	if err := op.validate(operands); err != nil {
-		return 0, err
-	}
 	res := 0.0
 	for _, operand := range operands {
 		res += operand
@@ -41,9 +38,6 @@ func newMul() Operation {
 }
 
 func (op mulOp) Execute(operands []float64) (float64, error) {
-	if err := op.validate(operands); err != nil {
-		return 0, err
-	}
 	res := 1.0
 	for _, operand := range operands {
 		res *= operand
@@ -64,9 +58,6 @@ func newSub() Operation {
 }
 
 func (op subOp) Execute(operands []float64) (float64, error) {
-	if err := op.validate(operands); err != nil {
-		return 0, err
-	}
 	res := operands[0] - operands[1]
 	return res, nil
 }
@@ -84,21 +75,11 @@ func newDiv() Operation {
 }
 
 func (op divOp) Execute(operands []float64) (float64, error) {
-	if err := op.validate(operands); err != nil {
-		return 0, err
+	if operands[1] == 0 {
+		return 0, fmt.Errorf("%w: %f / %f", ErrDivByZero, operands[0], operands[1])
 	}
 	res := operands[0] / operands[1]
 	return res, nil
-}
-
-func (op divOp) validate(operands []float64) error {
-	if err := op.baseOperation.validate(operands); err != nil {
-		return err
-	}
-	if operands[1] == 0 {
-		return fmt.Errorf("%w: %f / %f", ErrDivByZero, operands[0], operands[1])
-	}
-	return nil
 }
 
 type powOp struct {
@@ -114,9 +95,6 @@ func newPow() Operation {
 }
 
 func (op powOp) Execute(operands []float64) (float64, error) {
-	if err := op.validate(operands); err != nil {
-		return 0, err
-	}
 	res := math.Pow(operands[0], operands[1])
 	return res, nil
 }
@@ -134,9 +112,6 @@ func newNeg() Operation {
 }
 
 func (op negOp) Execute(operands []float64) (float64, error) {
-	if err := op.validate(operands); err != nil {
-		return 0, err
-	}
 	res := -operands[0]
 	return res, nil
 }
@@ -154,19 +129,9 @@ func newSqrt() Operation {
 }
 
 func (op sqrtOp) Execute(operands []float64) (float64, error) {
-	if err := op.validate(operands); err != nil {
-		return 0, err
+	if operands[0] < 0 {
+		return 0, fmt.Errorf("%w: %f", ErrNegativeSqrt, operands[0])
 	}
 	res := math.Sqrt(operands[0])
 	return res, nil
-}
-
-func (op sqrtOp) validate(operands []float64) error {
-	if err := op.baseOperation.validate(operands); err != nil {
-		return err
-	}
-	if operands[0] < 0 {
-		return fmt.Errorf("%w: %f", ErrNegativeSqrt, operands[0])
-	}
-	return nil
 }
